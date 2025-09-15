@@ -1,0 +1,17 @@
+{
+    "pedro" : {
+        "nombre" : "Pedro",
+        "apellidos" : "Camelias Lago",
+        "edad" : 21, 
+        "velocidad" : 19,
+        "fuerza" : 21
+    },
+
+    "marcos" : {
+        "nombre" : "marcos",
+        "apellidos" : "Pérez Trevinca",
+        "edad" : 39, 
+        "velocidad" : 25,
+        "fuerza" : 10
+    }
+}
