@@ -1,4 +1,4 @@
-
+;
 export function isObject(obj) {
     if (obj instanceof Object && !Array.isArray(obj) && obj != {}){
         return true;
@@ -32,3 +32,5 @@ function iterateArray(arr) {
         console.log(value);
     });
 }
+
+
