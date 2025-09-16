@@ -1,5 +1,6 @@
 import fs from 'fs/promises';
 import {isObject, iterateObjArr} from './jsUtils.js';
+import { arrayBuffer } from 'stream/consumers';
 
 /**
  * 
@@ -18,10 +19,21 @@ export async function readJson(url) {
     }
 }
 
+export function whiteList(data){
+    let list = [];
+    Object.keys(data).forEach((key) => {
+        list.push(key);
+    });
+    return list;
+}
 
-export function findByName(data, name) {
-    if (!isObject(data)) {
-        return "Error: la base de datos introducida debe ser un Objeto i";
+export function findByName(data, name, list) {
+    if (!isObject(data) && !Array.isArray(data)) {
+        console.log("Error: la base de datos introducida debe ser en formato Objeto o un Array");
+    }
+
+    if (!list.includes(name)){
+        console.log("Error: La carta introducida no existe.");
     }
 
     Object.entries(data).forEach(([key, value]) => {
