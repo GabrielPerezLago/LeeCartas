@@ -7,23 +7,27 @@ export function isObject(obj) {
     return false;
 }
 
-export function iterateObjArr(data){
+export function iterateObjArr(data, ret = false){
     if (isObject(data)){
-        return iterateObject(data);
+        return iterateObject(data, ret);
     } else if (Array.isArray(data)){
         return iterateArray(data);
     } else  {
-        return "Error: Los datos introducidos solo pueden ser arrays u objetos."
+        return console.error("Error: Los datos introducidos solo pueden ser arrays u objetos.");
     }
 }
 
-function iterateObject(obj) {
+function iterateObject(obj, ret = false ) {
     if (!isObject(obj)){
         return;
     }
 
     Object.entries(obj).forEach(([key, value]) => {
-        console.log( key + " : " + value);
+        if (!ret) {
+            console.log(key + " : " + value);
+        } else {
+            return {value}
+        }
     });
 }
 

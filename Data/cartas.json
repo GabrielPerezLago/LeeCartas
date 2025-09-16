@@ -1,17 +1,20 @@
 {
-    "pedro" : {
-        "nombre" : "Pedro",
-        "apellidos" : "Camelias Lago",
-        "edad" : 21, 
-        "velocidad" : 19,
-        "fuerza" : 21
-    },
-
-    "marcos" : {
-        "nombre" : "marcos",
-        "apellidos" : "Pérez Trevinca",
-        "edad" : 39, 
-        "velocidad" : 25,
-        "fuerza" : 10
-    }
+  "mago": {
+    "nombre": "mago",
+    "rareza": "epica",
+    "poder": 40,
+    "velocidad": 20
+  },
+  "orco": {
+    "nombre": "orco",
+    "rareza": "comun",
+    "poder": 30,
+    "velocidad": 30
+  },
+  "elfo": {
+    "nombre": "elfo",
+    "rareza": "epica",
+    "poder": 50,
+    "velocidad": 10
+  }
 }

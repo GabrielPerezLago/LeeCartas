@@ -1,5 +1,6 @@
 import fs from 'fs/promises';
 import {isObject, iterateObjArr} from './jsUtils.js';
+import { devNull } from 'os';
 
 /**
  * 
@@ -14,7 +15,17 @@ export async function readJson(url) {
         const readDAta = await fs.readFile(url, 'utf-8');
         return JSON.parse(readDAta);
     } catch (err) {
-        console.log("A habido un error en el lector del Json, Error : " + err);
+        console.error("A habido un error en el lector del Json, Error : " + err);
+    }
+}
+
+export async function updateJson(url, data) {
+
+    try {
+        const updatedJson = JSON.stringify(data, null, 2)
+        await fs.writeFile(url, updatedJson, 'utf-8');
+    } catch (err) {
+        console.error("Algo no funciona como es debido :: Error: " + err);
     }
 }
 
@@ -53,4 +64,31 @@ export function countCards(data){
     return contador;
 }
 
-export function createCard(){}
+export function createCard(data, obj, url = null){
+    const mergeData = {...data , ...obj };
+    console.log(mergeData);
+    updateJson(url, mergeData);
+}
+
+export function deleteCard(data, nombre, url = null){
+    delete data[nombre];
+    console.log(data);
+    updateJson(url, data);
+};
+
+export function updateCard(data , name, url = null){
+    Object.entries(data).forEach(([key, value]) => {
+        if (name == key) {
+            console.log(value);
+        }
+    });
+}
+
+
+function filterData(obj){
+    Object.entries(obj).forEach(([key, values]) =>  {
+        if(key == nombre) { 
+        }
+    });
+}
+
