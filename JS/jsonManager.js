@@ -1,6 +1,5 @@
 import fs from 'fs/promises';
 import {isObject, iterateObjArr} from './jsUtils.js';
-import { arrayBuffer } from 'stream/consumers';
 
 /**
  * 
@@ -42,3 +41,16 @@ export function findByName(data, name, list) {
         }
     });
 }
+
+export function countCards(data){
+    const keys = Object.keys(data);
+    let contador = 0;
+    
+    for(let i = 0 ; i<keys.length; i++) {
+        contador ++;
+    }
+
+    return contador;
+}
+
+export function createCard(){}
