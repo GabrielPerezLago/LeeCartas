@@ -1,20 +1,26 @@
 {
-  "mago": {
-    "nombre": "mago",
-    "rareza": "epica",
-    "poder": 40,
-    "velocidad": 20
-  },
-  "orco": {
-    "nombre": "orco",
-    "rareza": "comun",
-    "poder": 30,
-    "velocidad": 30
-  },
-  "elfo": {
-    "nombre": "elfo",
+  "pan": {
+    "nombre": "pan",
     "rareza": "epica",
     "poder": 50,
     "velocidad": 10
+  },
+  "paco": {
+    "nombre": "paco",
+    "rareza": "legendaria",
+    "poder": 100,
+    "velocidad": 40
+  },
+  "duende": {
+    "nombre": "duende",
+    "rareza": "comun",
+    "poder": 10,
+    "velocidad": 10
+  },
+  "orco": {
+    "nombre": "orco",
+    "rareza": "rara",
+    "poder": 80,
+    "velocidad": 50
   }
 }

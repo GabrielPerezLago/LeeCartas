@@ -1,4 +1,5 @@
-;
+
+
 export function isObject(obj) {
     if (obj instanceof Object && !Array.isArray(obj) && obj != {}){
         return true;
@@ -7,9 +8,9 @@ export function isObject(obj) {
     return false;
 }
 
-export function iterateObjArr(data, ret = false){
+export function iterateObjArr(data, biDim = false){
     if (isObject(data)){
-        return iterateObject(data, ret);
+        return iterateObject(data, biDim);
     } else if (Array.isArray(data)){
         return iterateArray(data);
     } else  {
@@ -17,16 +18,16 @@ export function iterateObjArr(data, ret = false){
     }
 }
 
-function iterateObject(obj, ret = false ) {
+function iterateObject(obj, biDim = false ) {
     if (!isObject(obj)){
         return;
     }
 
     Object.entries(obj).forEach(([key, value]) => {
-        if (!ret) {
-            console.log(key + " : " + value);
+        if(biDim == true){
+            console.log(key + ' : { ' + iterateObjArr(value) + ' }');
         } else {
-            return {value}
+            console.log(key + ' : ' + value);
         }
     });
 }
@@ -36,5 +37,3 @@ function iterateArray(arr) {
         console.log(value);
     });
 }
-
-

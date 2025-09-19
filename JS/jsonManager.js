@@ -1,6 +1,7 @@
 import fs from 'fs/promises';
 import {isObject, iterateObjArr} from './jsUtils.js';
 import { devNull } from 'os';
+import { exists } from 'fs';
 
 /**
  * 
@@ -28,6 +29,10 @@ export async function updateJson(url, data) {
         console.error("Algo no funciona como es debido :: Error: " + err);
     }
 }
+
+export function showCards(data){
+    iterateObjArr(data, true);
+};
 
 export function whiteList(data){
     let list = [];
@@ -76,12 +81,27 @@ export function deleteCard(data, nombre, url = null){
     updateJson(url, data);
 };
 
-export function updateCard(data , name, url = null){
-    Object.entries(data).forEach(([key, value]) => {
-        if (name == key) {
-            console.log(value);
-        }
+export function updateCard(globalData , updatedData, url = null){
+    const newData = {};
+    let deleteKey = '';
+    Object.entries(globalData).forEach(([gKey, gValue])=> {
+        Object.entries(updatedData).forEach(([uKey, uValue]) => {
+            if (gKey == uKey){
+                if(uValue.hasOwnProperty('nombre')){
+                    deleteKey = gKey;
+                    newData[uValue.nombre] = {...gValue, ...uValue};
+                } else {
+                    newData[gKey] = {...gValue, ...uValue};
+                }
+                
+            }
+        });
     });
+    const updatedAllData = {...globalData, ...newData};
+    if(deleteKey != ''){
+        deleteCard(updatedAllData, deleteKey, url);
+    }
+    updateJson(url, updatedAllData);
 }
 
 
