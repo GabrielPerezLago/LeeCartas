@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/GabrielPerezLago/LeeCartas#readme",
   "dependencies": {
+    "dotenv": "^17.2.2",
     "mysql2": "^3.15.0",
     "prompt-sync": "^4.2.0"
   }
