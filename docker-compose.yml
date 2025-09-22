@@ -1,0 +1,19 @@
+version : '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_cartas_node
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: admin@22
+      MYSQL_DATABASE: cartas
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin@22
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql-init:/docker-entrypoint-initdb.d
+volumes:
+  mysql_data:
