@@ -1,10 +1,34 @@
-import { connection } from '../Data/connectionDB.js';
+import { connection } from "../../Data/connectionDB.js";
+import { iterateMysal2Data } from "../Utils/jsUtils.js";
 
+export async function findByRareza(rareza, bol = false) {
+    try{
+        const conn = await connection();
+        const [data] = await conn.execute('SELECT id, rareza FROM RAREZA WHERE rareza = ? ' , [rareza]);
+        if (bol) {
+            if (data.length > 0) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            console.log("findRareza: " + data)
+            return data;
+        }
+    } catch (ex) {
+        console.error(ex);
+    }
+}
 
-const SELECT_CARTAS = 'SELECT c.nombre, r.rareza as rareza, c.poder, c.velocidad FROM CARTAS c INNER JOIN RAREZA r ON c.id_rareza = r.id'
+export async function getIdRareza(rareza){
+    try{
+        const conn = await connection();
 
-export async function findAllCards() {
-    const conn = await connection();
-    const [cartas] = await conn.execute(SELECT_CARTAS);
-    return cartas;
+        const [idRareza] = await conn.execute('SELECT id FROM RAREZA WHERE rareza = ? ', [rareza]);
+        const id = iterateMysal2Data(idRareza);
+        console.log('idRareza: ' + id);
+        return id.id;
+    } catch (ex) {
+        console.error(ex);
+    }
 }

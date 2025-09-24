@@ -40,7 +40,7 @@ export function whiteList(data){
     return list;
 }
 
-export function findByName(data, name, list) {
+export function findByNameJson(data, name, list) {
     if (!isObject(data) && !Array.isArray(data)) {
         console.log("Error: la base de datos introducida debe ser en formato Objeto o un Array");
     }
@@ -67,19 +67,19 @@ export function countCards(data){
     return contador;
 }
 
-export function createCard(data, obj, url = null){
+export function createCardJson(data, obj, url = null){
     const mergeData = {...data , ...obj };
     console.log(mergeData);
     updateJson(url, mergeData);
 }
 
-export function deleteCard(data, nombre, url = null){
+export function deleteCardJson(data, nombre, url = null){
     delete data[nombre];
     console.log(data);
     updateJson(url, data);
 };
 
-export function updateCard(globalData , updatedData, url = null){
+export function updateCardJson(globalData , updatedData, url = null){
     const newData = {};
     let deleteKey = '';
     Object.entries(globalData).forEach(([gKey, gValue])=> {

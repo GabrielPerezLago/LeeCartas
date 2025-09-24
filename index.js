@@ -1,6 +1,7 @@
-import { showCards, readJson, whiteList, findByName, countCards, createCard, deleteCard, updateCard } from "./JS/Models/jsonManager.js";
+import { showCards, readJson, whiteList, findByNameJson, countCards, createCardJson, deleteCardJson, updateCardJson } from "./JS/Models/jsonManager.js";
 import { createRequire } from 'module';
-import { findAllCards } from "./Test/modelConnectionTest.js";
+import { findAllCards, findByName, createCard } from "./JS/Models/cartasDAO.js";
+
 
 // Constantes Globales para manejar los datos y las funciones necesarias.
 // Esta constante guarda los datos del json parseados a objeto JS.
@@ -19,8 +20,12 @@ const prompt = require('prompt-sync')();
  */
 async function main() {
 
-    const db = prompt('Deseas acceder al servidor(Base de Datos): "db",  o a los datos locales(JSON) "json"? : ').toLowerCase();
+    const db = 'db' //prompt('Deseas acceder al servidor(Base de Datos): "db",  o a los datos locales(JSON) "json"? : ').toLowerCase();
 
+    if (db !== 'db' && db !== 'json'){
+        console.error("Error: Se deben insertar uno de los tipos de base de datos mostrados anteriormente, '"  + db + "' no es un dato valido. ");
+        process.exit(1);
+    }
     if (db === 'json') {
         // Se encarga de guardar los datos del Json en objeto JS.
         dataJs = await readJson(dataJson);
@@ -32,7 +37,7 @@ async function main() {
     }
 
     // Interfaz
-    var action = prompt('Dime que quieres hacer ?: ').toLowerCase();
+    var action = 'crear' //prompt('Dime que quieres hacer ?: ').toLowerCase();
 
     switch (action) {
         case 'mostrar': (async () => {
@@ -43,13 +48,19 @@ async function main() {
             }
         })();
             break;
-        case 'buscar': (() => {
-            var name = prompt('Inserta la carta que quieres buscar: ').toLowerCase();
-            findByName(dataJs, name.toLowerCase(), list);
+        case 'buscar': ( async () => {
+            const name = prompt('Inserta la carta que quieres buscar: ').toLowerCase();
+            if (db === 'json') {
+                findByNameJson(dataJs, name.toLowerCase(), list);
+            } else if (db === 'db') {
+                const carta = await findByName(name);
+                console.log(carta);
+                process.exit(1);
+            }
         })();
             break;
 
-        case 'crear': (() => {
+        case 'crear': ( async () => {
             const nombre = { nombre: prompt('Inserte el nombre de la carta: ').toLowerCase() };
             const titulo = Object.values(nombre);
             const rareza = { rareza: prompt('Inserte la rareza de la carta:').toLowerCase() };
@@ -57,18 +68,28 @@ async function main() {
             const velocidad = { velocidad: parseInt(prompt('Inserte la velidad de la carta: '), 10) };
 
             const datos = { ...nombre, ...rareza, ...poder, ...velocidad };
-            const carta = { [titulo]: datos };
+            
+            if (db === 'json'){
+                const carta = { [titulo]: datos };
+                console.log(carta);
+                createCardJson(dataJs, carta, dataJson);
 
-            console.log(carta);
+            } else {
+                const insert = await createCard(datos);
+                const creacion = insert ? 'Se a creado la carta correctamente'  : 'Algo a ocurrido mal la carta no se a creado';
+                console.log(creacion);
 
-            createCard(dataJs, carta, dataJson);
+                process.exit(1);
+            }
+        
 
+           
         })();
             break;
 
         case 'eliminar': (() => {
             const nombre = prompt("Que carta deseas eliminar? : ").toLowerCase();
-            deleteCard(dataJs, nombre, dataJson);
+            deleteCardJson(dataJs, nombre, dataJson);
         })();
             break;
 
@@ -156,6 +177,10 @@ function editPrompt(promp, objData, key, type = 'string') {
 
     objData[key] = data;
 
+}
+
+function validateImportData(data){
+    
 }
 
 

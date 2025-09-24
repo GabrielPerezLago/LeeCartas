@@ -37,3 +37,36 @@ function iterateArray(arr) {
         console.log(value);
     });
 }
+
+
+export function parseObjToArr(obj){
+
+    if (!isObject(obj)){
+        console.error('Error: Los datos introducidos no son validos , la funcion solicita objetos ');
+        return;
+    }
+
+    let arr = new Array();
+    Object.entries(obj).forEach(([key, value]) => {
+        arr.push(value);
+    });
+    return arr;
+}
+
+/**
+ * 
+ * @param {*} data 
+ * 
+ * Esta funcion parsea los datos que devulve el mysql dos de la base de datos un objeto sencillo
+ */
+export function iterateMysal2Data(data){
+    const newDta = {};
+
+    data.forEach((element) => {
+        Object.entries(element).forEach(([key, value]) => {
+            newDta[key] = value; 
+        });
+    });
+
+    return newDta; 
+}
