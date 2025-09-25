@@ -1,6 +1,7 @@
 import { showCards, readJson, whiteList, findByNameJson, countCards, createCardJson, deleteCardJson, updateCardJson } from "./JS/Models/jsonManager.js";
 import { createRequire } from 'module';
-import { findAllCards, findByName, createCard } from "./JS/Models/cartasDAO.js";
+import { findAllCards, findByName, createCard, deleteCard, updateCard } from "./JS/Models/cartasDAO.js";
+import { inObject } from "./JS/Utils/jsUtils.js";
 
 
 // Constantes Globales para manejar los datos y las funciones necesarias.
@@ -22,8 +23,8 @@ async function main() {
 
     const db = 'db' //prompt('Deseas acceder al servidor(Base de Datos): "db",  o a los datos locales(JSON) "json"? : ').toLowerCase();
 
-    if (db !== 'db' && db !== 'json'){
-        console.error("Error: Se deben insertar uno de los tipos de base de datos mostrados anteriormente, '"  + db + "' no es un dato valido. ");
+    if (db !== 'db' && db !== 'json') {
+        console.error("Error: Se deben insertar uno de los tipos de base de datos mostrados anteriormente, '" + db + "' no es un dato valido. ");
         process.exit(1);
     }
     if (db === 'json') {
@@ -37,18 +38,21 @@ async function main() {
     }
 
     // Interfaz
-    var action = 'crear' //prompt('Dime que quieres hacer ?: ').toLowerCase();
+    var action = prompt('Dime que quieres hacer ?: ').toLowerCase();
 
     switch (action) {
+        // Mostar las Cartas
         case 'mostrar': (async () => {
-            if (db === "db"){
+            if (db === "db") {
                 const cartas = await findAllCards();
                 console.log(cartas);
                 process.exit(1);
             }
         })();
             break;
-        case 'buscar': ( async () => {
+
+        //Buscar Cartas por nombre
+        case 'buscar': (async () => {
             const name = prompt('Inserta la carta que quieres buscar: ').toLowerCase();
             if (db === 'json') {
                 findByNameJson(dataJs, name.toLowerCase(), list);
@@ -60,7 +64,8 @@ async function main() {
         })();
             break;
 
-        case 'crear': ( async () => {
+        // Crear cartas 
+        case 'crear': (async () => {
             const nombre = { nombre: prompt('Inserte el nombre de la carta: ').toLowerCase() };
             const titulo = Object.values(nombre);
             const rareza = { rareza: prompt('Inserte la rareza de la carta:').toLowerCase() };
@@ -68,38 +73,43 @@ async function main() {
             const velocidad = { velocidad: parseInt(prompt('Inserte la velidad de la carta: '), 10) };
 
             const datos = { ...nombre, ...rareza, ...poder, ...velocidad };
-            
-            if (db === 'json'){
+
+            if (db === 'json') {
                 const carta = { [titulo]: datos };
                 console.log(carta);
                 createCardJson(dataJs, carta, dataJson);
 
             } else {
                 const insert = await createCard(datos);
-                const creacion = insert ? 'Se a creado la carta correctamente'  : 'Algo a ocurrido mal la carta no se a creado';
+                const creacion = insert ? 'Se a creado la carta correctamente' : 'Algo a ocurrido mal la carta no se a creado';
                 console.log(creacion);
 
                 process.exit(1);
             }
-        
-
-           
         })();
             break;
 
-        case 'eliminar': (() => {
+        // Eliminar Cartas
+        case 'eliminar': (async () => {
             const nombre = prompt("Que carta deseas eliminar? : ").toLowerCase();
-            deleteCardJson(dataJs, nombre, dataJson);
+            if (db === 'json') {
+                deleteCardJson(dataJs, nombre, dataJson);
+            } else {
+                const del = await deleteCard(nombre);
+                del == true ? console.log('La carta ' + nombre + ' se ha eliminado correctamente') : console.log('Algo a ocurrido mal, ' + nombre + ' la carta no a podido ser eliminada');
+                process.exit(1);
+            }
         })();
             break;
-
-        case 'editar': (() => {
+        // Actualizar Cartas
+        case 'editar': (async () => {
             const nombre = prompt("Que carta quieres actualizar? :").toLowerCase();
-            console.log(dataJs[nombre]);
-
-            if (!dataJs.hasOwnProperty(nombre)) {
-                console.error('Error: Esta carta no existe, intentalo de nuevo.');
-                return;
+            
+            const exist = db === 'json' ? inObject(dataJs, nombre) : await findByName(nombre, true);
+            
+            if (!exist){
+                console.error('La carta introducida no existe.');
+                process.exit(1);
             }
 
             let actualizar = true;
@@ -138,10 +148,15 @@ async function main() {
 
             }
 
-            const sendData = {};
-            sendData[nombre] = updateData;
-            console.log(sendData);
-            updateCard(dataJs, sendData, dataJson);
+            if (db === 'json') {
+                const sendData = {};
+                sendData[nombre] = updateData;
+                console.log(sendData);
+                updateCardJson(dataJs, sendData, dataJson);
+            } else {
+                await updateCard(updateData);
+            }
+
 
         })();
     }
@@ -179,8 +194,8 @@ function editPrompt(promp, objData, key, type = 'string') {
 
 }
 
-function validateImportData(data){
-    
+function validateImportData(data) {
+
 }
 
 

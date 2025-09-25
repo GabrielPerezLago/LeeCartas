@@ -4,6 +4,8 @@ import { findByRareza, getIdRareza } from "./rarezaDAO.js";
 
 const SELECT_CARTAS = 'SELECT c.nombre, r.rareza as rareza, c.poder, c.velocidad FROM CARTAS c INNER JOIN RAREZA r ON c.id_rareza = r.id'
 const INSERT_CARTAS = 'INSERT INTO CARTAS (nombre, id_rareza, poder, velocidad) values(?, ?, ?, ?)'
+const DELETE_CARTAS = 'DELETE FROM CARTAS WHERE nombre = ?';
+
 export async function findAllCards() {
     try {
         const conn = await connection();
@@ -19,8 +21,10 @@ export async function findByName(name, bol = false) {
         const conn = await connection();
         const [carta] = await conn.execute(SELECT_CARTAS + ' WHERE c.nombre = ? ', [name]);
         
-        if (name && carta.length > 0){
+        if (bol == true && carta.length > 0){
             return true;
+        } else if (bol == true && carta.length <= 0){
+            return false;
         } else {
             return carta;
         }
@@ -34,7 +38,7 @@ export async function findByName(name, bol = false) {
 
 export async function createCard(obj) {
     try {
-        if (findByName(obj.nombre, true)) {
+        if (await findByName(obj.nombre, true) === true) {
             throw new Error('La carta ya existe, por favor cree una nueva o actualice esta');
         }
 
@@ -57,4 +61,28 @@ export async function createCard(obj) {
     } catch (ex) {
         console.error(ex);
     }
+}
+
+export async function deleteCard(name) {
+    try {
+        if (!findByName(name, true)){
+            throw new Error('La carta insertada no existe.');
+        }
+
+        const conn = await connection();
+        const del = await conn.execute(DELETE_CARTAS, [name]);
+
+        if(del.length > 0){
+            return true;
+        } else {
+            return false ;
+        }
+
+    } catch (ex) {
+        console.error(ex);
+    }
+}
+
+export async function updateCard(obj) {
+    console.log(obj);
 }
