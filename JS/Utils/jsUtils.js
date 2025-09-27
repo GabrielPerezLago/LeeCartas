@@ -53,6 +53,11 @@ export function parseObjToArr(obj) {
     return arr;
 }
 
+export function parseObjToOrderArr(data, arr){
+    const inOrder = arr.map((clave) => data[clave]);
+    return inOrder;
+}
+
 /**
  * 
  * @param {*} data 
@@ -72,9 +77,15 @@ export function iterateMysal2Data(data) {
 }
 
 export function inObject(obj, value) {
-    if (!obj.hasOwnProperty(value)) {
-        return false;
+    if (obj.hasOwnProperty(value)) {
+        return true;
     }
 
-    return true;
+    return false;
+}
+
+export function printArrayTexts(array) {
+    array.forEach( (value) => {
+        console.log(value);
+    });
 }

@@ -1,7 +1,7 @@
 import { showCards, readJson, whiteList, findByNameJson, countCards, createCardJson, deleteCardJson, updateCardJson } from "./JS/Models/jsonManager.js";
 import { createRequire } from 'module';
-import { findAllCards, findByName, createCard, deleteCard, updateCard } from "./JS/Models/cartasDAO.js";
-import { inObject } from "./JS/Utils/jsUtils.js";
+import { findAllCards, findByName, createCard, deleteCard, updateCard, filterInput, getCardId } from "./JS/Models/cartasDAO.js";
+import { inObject, printArrayTexts } from "./JS/Utils/jsUtils.js";
 
 
 // Constantes Globales para manejar los datos y las funciones necesarias.
@@ -112,9 +112,13 @@ async function main() {
                 process.exit(1);
             }
 
+            const idCard = await getCardId(nombre);
+
             let actualizar = true;
             //Objeto que se enviara a la funcion que actualza el json;
             let updateData = {};
+            updateData = {id : idCard};
+            console.log(updateData);
             while (actualizar) {
                 const doEdit = prompt('Que deseas editar?: ');
 
@@ -144,8 +148,6 @@ async function main() {
                 if (kill == 'no') {
                     actualizar = false;
                 }
-
-
             }
 
             if (db === 'json') {
@@ -154,7 +156,14 @@ async function main() {
                 console.log(sendData);
                 updateCardJson(dataJs, sendData, dataJson);
             } else {
-                await updateCard(updateData);
+                const checkErros = await filterInput(updateData, 0);
+                if (checkErros != true) {
+                    printArrayTexts(checkErros);
+                } else {
+                    const upd = await updateCard(updateData);
+                    upd ? console.log('Carta actualizada correctamente') : console.error('Carta no a sido actualizada');
+                }
+                process.exit(1);
             }
 
 
@@ -177,7 +186,7 @@ async function main() {
  * con la clave introducida y el valor del promp guardadndo asi los datos en ese objeto.
  * 
  * Tipos:
- * 'string' : guarda los datos en formato texto en MINUSCULAS.
+ * default -> 'string' : guarda los datos en formato texto en MINUSCULAS.
  * 'int' : guarda los datos parseandolos a numero entero. 
  */
 function editPrompt(promp, objData, key, type = 'string') {
