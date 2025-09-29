@@ -1,4 +1,4 @@
-version : '3.8'
+version: '3.8'
 
 services:
   mysql:
@@ -15,5 +15,16 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
       - ./mysql-init:/docker-entrypoint-initdb.d
+  mongodb:
+    image: mongo:6
+    container_name: mongo_cartas_node
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin@22
+    volumes:
+      - ./mongo-data:/data/db
+      - ./mongo-init:/docker-entrypoint-initdb.d
 volumes:
   mysql_data:
