@@ -1,7 +1,7 @@
-import { showCards, readJson, whiteList, findByNameJson, countCards, createCardJson, deleteCardJson, updateCardJson } from "./JS/Models/jsonManager.js";
+import { showCards, readJson, whiteList, findByNameJson, countCards, createCardJson, deleteCardJson, updateCardJson } from "./models/json/jsonManager.js";
 import { createRequire } from 'module';
-import { findAllCards, findByName, createCard, deleteCard, updateCard, filterInput, getCardId } from "./JS/Models/cartasDAO.js";
-import { inObject, printArrayTexts } from "./JS/Utils/jsUtils.js";
+import { findAllCards, findByName, createCard, deleteCard, updateCard, filterInput, getCardId } from "./models/mysql/cartasDAO.js";
+import { inObject, printArrayTexts } from "./Utils/jsUtils.js";
 
 
 // Constantes Globales para manejar los datos y las funciones necesarias.

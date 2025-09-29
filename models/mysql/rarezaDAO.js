@@ -1,5 +1,5 @@
-import { connection } from "../../Data/connectionDB.js";
-import { iterateMysal2Data } from "../Utils/jsUtils.js";
+import { connection } from "../../Data/mysql.js";
+import { iterateMysal2Data } from "../../Utils/jsUtils.js";
 
 export async function findByRareza(rareza, bol = false) {
     try{

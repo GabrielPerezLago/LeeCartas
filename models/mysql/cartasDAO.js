@@ -1,6 +1,6 @@
-import { connection } from "../../Data/connectionDB.js";
-import { inObject, iterateMysal2Data, parseObjToArr, parseObjToOrderArr } from "../Utils/jsUtils.js";
-import { whiteList } from "./jsonManager.js";
+import { connection } from "../../Data/mysql.js";
+import { inObject, iterateMysal2Data, parseObjToArr, parseObjToOrderArr } from "../../Utils/jsUtils.js";
+import { whiteList } from "../json/jsonManager.js";
 import { findByRareza, getIdRareza } from "./rarezaDAO.js";
 
 const SELECT_ID_CARTAS = 'SELECT c.id FROM CARTAS c WHERE c.nombre = ?';
