@@ -1,7 +1,7 @@
 import { showCards, readJson, whiteList, findByNameJson, countCards, createCardJson, deleteCardJson, updateCardJson } from "./app/models/json/jsonManager.js";
 import { createRequire } from 'module';
-import { findAllCards, findByName, createCard, deleteCard, updateCard, filterInput, getCardId } from "./app/models/mysql/cartasDAO.js";
-import { inObject, printArrayTexts } from "./app/Utils/jsUtils.js";
+import { inObject } from "./app/Utils/jsUtils.js";
+import { createCardController, deleteCardController, findAllCardsController, findByNameCardCotroller,getIdCardController, updateCardController } from "./app/Controllers/mysql/cartasController.js";
 
 
 // Constantes Globales para manejar los datos y las funciones necesarias.
@@ -44,7 +44,7 @@ async function main() {
         // Mostar las Cartas
         case 'mostrar': (async () => {
             if (db === "db") {
-                const cartas = await findAllCards();
+                const cartas = await findAllCardsController();
                 console.log(cartas);
                 process.exit(1);
             }
@@ -57,7 +57,7 @@ async function main() {
             if (db === 'json') {
                 findByNameJson(dataJs, name.toLowerCase(), list);
             } else if (db === 'db') {
-                const carta = await findByName(name);
+                const carta = await findByNameCardCotroller(name);
                 console.log(carta);
                 process.exit(1);
             }
@@ -80,7 +80,7 @@ async function main() {
                 createCardJson(dataJs, carta, dataJson);
 
             } else {
-                const insert = await createCard(datos);
+                const insert = await createCardController(datos);
                 const creacion = insert ? 'Se a creado la carta correctamente' : 'Algo a ocurrido mal la carta no se a creado';
                 console.log(creacion);
 
@@ -95,7 +95,7 @@ async function main() {
             if (db === 'json') {
                 deleteCardJson(dataJs, nombre, dataJson);
             } else {
-                const del = await deleteCard(nombre);
+                const del = await deleteCardController(nombre);
                 del == true ? console.log('La carta ' + nombre + ' se ha eliminado correctamente') : console.log('Algo a ocurrido mal, ' + nombre + ' la carta no a podido ser eliminada');
                 process.exit(1);
             }
@@ -105,14 +105,14 @@ async function main() {
         case 'editar': (async () => {
             const nombre = prompt("Que carta quieres actualizar? :").toLowerCase();
             
-            const exist = db === 'json' ? inObject(dataJs, nombre) : await findByName(nombre, true);
+            const exist = db === 'json' ? inObject(dataJs, nombre) : await findByNameCardCotroller(nombre, true);
             
             if (!exist){
                 console.error('La carta introducida no existe.');
                 process.exit(1);
             }
 
-            const idCard = await getCardId(nombre);
+            const idCard = await getIdCardController(nombre);
 
             let actualizar = true;
             //Objeto que se enviara a la funcion que actualza el json;
@@ -156,13 +156,9 @@ async function main() {
                 console.log(sendData);
                 updateCardJson(dataJs, sendData, dataJson);
             } else {
-                const checkErros = await filterInput(updateData, 0);
-                if (checkErros != true) {
-                    printArrayTexts(checkErros);
-                } else {
-                    const upd = await updateCard(updateData);
-                    upd ? console.log('Carta actualizada correctamente') : console.error('Carta no a sido actualizada');
-                }
+                const upd = await updateCardController(updateData);
+                upd ? console.log('Carta actualizada correctamente') : console.error('Carta no a sido actualizada');
+                
                 process.exit(1);
             }
 
@@ -203,9 +199,6 @@ function editPrompt(promp, objData, key, type = 'string') {
 
 }
 
-function validateImportData(data) {
-
-}
 
 
 main();

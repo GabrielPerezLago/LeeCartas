@@ -1,29 +1,28 @@
-import { createRequire } from 'module';
+import { MongoClient } from 'mongodb';
 
+const uri = "mongodb://admin:admin@22@localhost:27017";
 
-const require = createRequire(import.meta.url);
+const client = MongoClient(uri);
 
-const {MongoClient , ServerApiVersion} = require('mongodb');
-const url = "mongodb+srv://admin:admin@22@cluster0.3cdr7i5.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
-
-const client = new MongoClient( url , {
-    serverApi: {
-        version: ServerApiVersion,
-        strict: true,
-        deprecationErrors: true,
-    }
-});
-
-async function run() {
+export async function run() {
     try{
+        const dbName = "cartas"
         await client.connect();
-        await client.db("admin").command({ ping: 1 });
+        const db = client.db(dbName);
+
+        return db;
 
     }   catch(ex) {
         console.error(ex);
-    } finally {
-        await client.close();
-    }
+    } 
+        
 }
 
-run().catch(console.dir);
+export async function connect() {
+    try{
+        const connect = await run();
+        return connect.collection('cartas');
+    } catch(ex) {
+        console.error(ex);
+    }
+}
