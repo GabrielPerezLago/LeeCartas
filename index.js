@@ -43,7 +43,8 @@ async function main() {
 
     // Interfaz
     var action = prompt('Dime que quieres hacer ?: ').toLowerCase();
-
+    // Eleccion de la funcion que va a realizar el ususario
+    
     switch (action) {
         // Mostar las Cartas
         case 'mostrar': (async () => {
