@@ -1,8 +1,10 @@
 import { showCards, readJson, whiteList, findByNameJson, countCards, createCardJson, deleteCardJson, updateCardJson } from "./app/models/json/jsonManager.js";
 import { createRequire } from 'module';
-import { inObject } from "./app/Utils/jsUtils.js";
-import { createCardController, deleteCardController, findAllCardsController, findByNameCardCotroller,getIdCardController, updateCardController } from "./app/Controllers/mysql/cartasController.js";
-
+import { checkWhitelistData, inObject } from "./app/Utils/jsUtils.js";
+import { createCardController, deleteCardController, findAllCardsController, findByNameCardCotroller, getIdCardController, updateCardController } from "./app/Controllers/mysql/cartasController.js";
+import { findCartasMongoCotroller, findByNameCartasMogoController, createCartaMongoController, deleteCartaMongoController, updateCartaMongoController } from "./app/Controllers/mongo/cartasMongoController.js";
+import { verify } from "crypto";
+import { dirname } from "path";
 
 // Constantes Globales para manejar los datos y las funciones necesarias.
 // Esta constante guarda los datos del json parseados a objeto JS.
@@ -21,12 +23,14 @@ const prompt = require('prompt-sync')();
  */
 async function main() {
 
-    const db = 'db' //prompt('Deseas acceder al servidor(Base de Datos): "db",  o a los datos locales(JSON) "json"? : ').toLowerCase();
+    const db = 'mongo' //prompt('Deseas acceder al servidor(Base de Datos): "db",  o a los datos locales(JSON) "json"? : ').toLowerCase();
+    const whiteList = ['text', 'json', 'mysql', 'mongo'];
 
-    if (db !== 'db' && db !== 'json') {
+    if (!checkWhitelistData(db, whiteList)) {
         console.error("Error: Se deben insertar uno de los tipos de base de datos mostrados anteriormente, '" + db + "' no es un dato valido. ");
         process.exit(1);
     }
+
     if (db === 'json') {
         // Se encarga de guardar los datos del Json en objeto JS.
         dataJs = await readJson(dataJson);
@@ -43,10 +47,18 @@ async function main() {
     switch (action) {
         // Mostar las Cartas
         case 'mostrar': (async () => {
-            if (db === "db") {
-                const cartas = await findAllCardsController();
-                console.log(cartas);
-                process.exit(1);
+            switch (db) {
+                case 'mysql': (async () => {
+                    const cartas = await findAllCardsController();
+                    console.log(cartas);
+                    process.exit(1);
+                })();
+                    break;
+                case 'mongo': (async () => {
+                    const carta = await findCartasMongoCotroller();
+                    console.log(carta);
+                    process.exit(1);
+                })();
             }
         })();
             break;
@@ -54,12 +66,24 @@ async function main() {
         //Buscar Cartas por nombre
         case 'buscar': (async () => {
             const name = prompt('Inserta la carta que quieres buscar: ').toLowerCase();
-            if (db === 'json') {
-                findByNameJson(dataJs, name.toLowerCase(), list);
-            } else if (db === 'db') {
-                const carta = await findByNameCardCotroller(name);
-                console.log(carta);
-                process.exit(1);
+            switch (db) {
+                case 'json': (() => {
+                    findByNameJson(dataJs, name.toLowerCase(), list);
+                })();
+                    break;
+
+                case 'mysql': (async () => {
+                    const carta = await findByNameCardCotroller(name);
+                    console.log(carta);
+                    process.exit(1);
+                })();
+                break;
+
+                case 'mongo' : (async () => {
+                    const carta = await findByNameCartasMogoController(name);
+                    console.log(carta);
+                    process.exit(1);
+                })();
             }
         })();
             break;
@@ -74,17 +98,31 @@ async function main() {
 
             const datos = { ...nombre, ...rareza, ...poder, ...velocidad };
 
-            if (db === 'json') {
-                const carta = { [titulo]: datos };
-                console.log(carta);
-                createCardJson(dataJs, carta, dataJson);
+            switch(db){
+                case 'json' : (() => {
+                    const carta = { [titulo]: datos };
+                    console.log(carta);
+                    createCardJson(dataJs, carta, dataJson);
 
-            } else {
-                const insert = await createCardController(datos);
-                const creacion = insert ? 'Se a creado la carta correctamente' : 'Algo a ocurrido mal la carta no se a creado';
-                console.log(creacion);
+                })();
+                break;
 
-                process.exit(1);
+                case 'mysql' : (async () => {
+                    const insert = await createCardController(datos);
+                    const creacion = insert ? 'Se a creado la carta correctamente' : 'Algo a ocurrido mal la carta no se a creado';
+                    console.log(creacion);
+
+                    process.exit(1);
+                })();
+                break;
+
+                case `mongo` : (async () => {
+                    const insert = await createCartaMongoController(datos);
+                    const create = insert ? 'Se ha creado la carta Correctamente' : 'No se a creado la carta';
+                    console.log(create);
+
+                    process.exit(1);
+                })() ;
             }
         })();
             break;
@@ -92,33 +130,62 @@ async function main() {
         // Eliminar Cartas
         case 'eliminar': (async () => {
             const nombre = prompt("Que carta deseas eliminar? : ").toLowerCase();
-            if (db === 'json') {
-                deleteCardJson(dataJs, nombre, dataJson);
-            } else {
-                const del = await deleteCardController(nombre);
-                del == true ? console.log('La carta ' + nombre + ' se ha eliminado correctamente') : console.log('Algo a ocurrido mal, ' + nombre + ' la carta no a podido ser eliminada');
-                process.exit(1);
+
+            switch (db) {
+                case `json` : (() => {deleteCardJson(dataJs, nombre, dataJson);})();
+                break;
+
+                case `mysql` : (async () => {
+                    const del = await deleteCardController(nombre);
+                    del == true ? console.log('La carta ' + nombre + ' se ha eliminado correctamente') : console.log('Algo a ocurrido mal, ' + nombre + ' la carta no a podido ser eliminada');
+                    process.exit(1);
+                })();
+                break;
+
+                case `mongo` : (async () => {
+                    const del = await deleteCartaMongoController(nombre);
+                    del == true ? console.log('La carta ' + nombre + ' se ha eliminado correctamente') : console.log('Algo a ocurrido mal, ' + nombre + ' la carta no a podido ser eliminada');
+                    process.exit(1);
+                })(); 
             }
         })();
             break;
+
         // Actualizar Cartas
         case 'editar': (async () => {
             const nombre = prompt("Que carta quieres actualizar? :").toLowerCase();
-            
-            const exist = db === 'json' ? inObject(dataJs, nombre) : await findByNameCardCotroller(nombre, true);
-            
-            if (!exist){
+
+            let exist = null;
+
+            switch(db) {
+                case `json` : exist = inObject(dataJs, nombre);
+                break;
+
+                case `mysql` : exist = await findByNameCardCotroller(nombre, true);
+                break;
+
+                case `mongo` :  exist = await findByNameCartasMogoController(nombre, true);
+                break;
+            }
+
+            if (!exist) {
                 console.error('La carta introducida no existe.');
                 process.exit(1);
             }
 
-            const idCard = await getIdCardController(nombre);
+
+            
+
 
             let actualizar = true;
             //Objeto que se enviara a la funcion que actualza el json;
             let updateData = {};
-            updateData = {id : idCard};
-            console.log(updateData);
+
+            if (db == `mysql`) {
+                const idCard = await getIdCardController(nombre);
+                updateData = { id: idCard };
+            }
+            
             while (actualizar) {
                 const doEdit = prompt('Que deseas editar?: ');
 
@@ -150,16 +217,27 @@ async function main() {
                 }
             }
 
-            if (db === 'json') {
-                const sendData = {};
-                sendData[nombre] = updateData;
-                console.log(sendData);
-                updateCardJson(dataJs, sendData, dataJson);
-            } else {
-                const upd = await updateCardController(updateData);
-                upd ? console.log('Carta actualizada correctamente') : console.error('Carta no a sido actualizada');
-                
-                process.exit(1);
+            switch(db) {
+                case `json` : ( () => {
+                    const sendData = {};
+                    sendData[nombre] = updateData;
+                    console.log(sendData);
+                    updateCardJson(dataJs, sendData, dataJson);
+                })();
+                break;
+
+                case `mysql` : ( async () => {
+                    const upd = await updateCardController(updateData);
+                    upd ? console.log('Carta actualizada correctamente') : console.error('Carta no a sido actualizada');
+                    process.exit(1);
+                })() ;
+                break;
+
+                case `mongo` : ( async () => {
+                    const upd = await updateCartaMongoController(updateData, nombre);
+                    upd ? console.log('Carta actualizada correctamente') : console.error('Carta no a sido actualizada');
+                    process.exit(1);
+                })() ;
             }
 
 
@@ -198,7 +276,6 @@ function editPrompt(promp, objData, key, type = 'string') {
     objData[key] = data;
 
 }
-
 
 
 main();

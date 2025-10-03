@@ -30,8 +30,35 @@ db.carta.insertMany(
 );
 db.rareza.insertMany(
     [
-        { tipo: "comun" }, 
-        { tipo: "rara" }, 
-        { tipo: "Legendaria" }
+        {
+            _id: 1,
+            tipo: "comun" 
+        }, 
+        {
+            _id: 2,
+            tipo: "poco comun"
+        },
+        { 
+            _id: 3,
+            tipo: "rara" 
+        }, 
+        { 
+            _id: 4,
+            tipo: "legendaria" 
+        }
     ]
 );
+
+db.carta.aggregate([
+  {
+    $lookup: {
+      from: "rareza",
+      localField: "id_rareza",
+      foreignField: "_id",
+      as: "rareza"
+    }
+  },
+  {
+    $unwind: "$rareza"
+  }
+]);

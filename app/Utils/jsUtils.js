@@ -89,3 +89,9 @@ export function printArrayTexts(array) {
         console.log(value);
     });
 }
+
+export function checkWhitelistData(param, whiteList){
+    return whiteList.includes(param);
+}
+
+
